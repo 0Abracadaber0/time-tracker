@@ -1,6 +1,9 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"time-tracker/internal/handlers"
+)
 
 func SetupRoutes(app *fiber.App) {
 	// Return list of users
@@ -20,6 +23,6 @@ func SetupRoutes(app *fiber.App) {
 	app.Put("/users/:userId/", func(c *fiber.Ctx) error { return nil })
 
 	// Create new user
-	app.Post("/users/:userId/", func(c *fiber.Ctx) error { return nil })
+	app.Post("/users", handlers.CreateUserHandler)
 
 }
