@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"strings"
+	"time-tracker/config"
 	"time-tracker/internal/models"
 )
 
@@ -17,19 +18,21 @@ func CreateUserHandler(c *fiber.Ctx) error {
 
 	var data PassportData
 	if err := json.Unmarshal(c.Body(), &data); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON format"})
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid JSON format",
+		})
 	}
 
 	data.PassportSerie, data.PassportNumber =
 		strings.Split(data.PassportNumber, " ")[0],
 		strings.Split(data.PassportNumber, " ")[1]
 
-	url := "http://localhost:8081/info"
+	url := config.Config("URL_API")
 
 	a := fiber.AcquireAgent()
 	req := a.Request()
 	req.Header.SetMethod("GET")
-	params := fmt.Sprintf("?passportNumber=%s&passportSerie=%s", data.PassportNumber, data.PassportSerie)
+	params := fmt.Sprintf("/info?passportNumber=%s&passportSerie=%s", data.PassportNumber, data.PassportSerie)
 	req.SetRequestURI(url + params)
 
 	fmt.Println(req.String())
@@ -43,16 +46,18 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": errs})
 	}
 
-	// TODO: check all status codes from swagger
-
 	if statusCode != 200 {
-		return c.Status(statusCode).JSON(fiber.Map{"error": "Invalid JSON format"})
+		return c.Status(statusCode).JSON(fiber.Map{
+			"error": "Invalid JSON format",
+		})
 	}
 
 	var response models.User
 	err := json.Unmarshal(body, &response)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON format"})
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid JSON format",
+		})
 	}
 
 	return c.JSON(response)
