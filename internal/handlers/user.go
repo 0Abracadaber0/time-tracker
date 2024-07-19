@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"strings"
 	"time-tracker/config"
+	"time-tracker/internal/database"
 	"time-tracker/internal/models"
 )
 
@@ -68,5 +69,17 @@ func CreateUserHandler(c *fiber.Ctx) error {
 	}
 
 	log.Info("Response has been received", "url", url+params, "statusCode", statusCode)
+
+	_, err = database.DB.Exec("INSERT INTO users (surname, name, patronymic, address) VALUES ($1, $2, $3, $4)",
+		response.Surname,
+		response.Name,
+		response.Patronymic,
+		response.Address,
+	)
+
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	return c.JSON(response)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"time-tracker/config"
+	"time-tracker/internal/database"
 	"time-tracker/internal/router"
 )
 
@@ -16,6 +17,8 @@ func main() {
 		ctx.Locals("logger", log)
 		return ctx.Next()
 	})
+
+	database.ConnectDB()
 
 	router.SetupRoutes(app)
 
