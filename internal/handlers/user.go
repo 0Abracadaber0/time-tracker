@@ -81,5 +81,7 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		log.Error(err.Error())
 	}
 
+	log.Info("User has been added to the database")
+
 	return c.JSON(response)
 }

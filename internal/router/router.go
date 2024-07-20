@@ -25,4 +25,7 @@ func SetupRoutes(app *fiber.App) {
 	// Create new user
 	app.Post("/users", handlers.CreateUserHandler)
 
+	// Create new task
+	app.Post("/users/:userId/tasks", handlers.CreateTaskHandler)
+
 }
