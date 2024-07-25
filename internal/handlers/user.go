@@ -110,7 +110,7 @@ func ShowAllUsersHandler(c *fiber.Ctx) error {
 		log.Error(err.Error())
 	}
 
-	users := []models.User{}
+	var users []models.User
 	for rows.Next() {
 		if err := rows.Err(); err != nil {
 			log.Error("Ошибка при получении данных из строки:", err)
