@@ -14,7 +14,7 @@ func SetupRoutes(app *fiber.App) {
 	// Start timer on the users task
 	app.Post("/tasks/:taskId/start", handlers.StartTimerHandler)
 	// Stop timer on the users task
-	app.Post("tasks/:taskId/stop", func(c *fiber.Ctx) error { return nil })
+	app.Post("tasks/:taskId/stop", handlers.StopTimerHandler)
 
 	// Delete the user
 	app.Delete("/users/:userId", func(c *fiber.Ctx) error { return nil })

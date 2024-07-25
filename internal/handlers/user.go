@@ -123,7 +123,7 @@ func ShowAllUsersHandler(c *fiber.Ctx) error {
 			return err
 		}
 
-		datafixes.TrimRightSpace(&user)
+		datafixes.Trim(&user)
 		users = append(users, user)
 	}
 
