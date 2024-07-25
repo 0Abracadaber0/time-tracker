@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time-tracker/config"
 	"time-tracker/internal/database"
+	"time-tracker/internal/datafixes"
 	"time-tracker/internal/models"
 )
 
@@ -84,4 +85,49 @@ func CreateUserHandler(c *fiber.Ctx) error {
 	log.Info("User has been added to the database")
 
 	return c.JSON(response)
+}
+
+func ShowAllUsersHandler(c *fiber.Ctx) error {
+	log := c.Locals("logger").(*slog.Logger)
+
+	sortBy := c.Query("sort")
+	orderBy := c.Query("order")
+
+	if sortBy == "" {
+		sortBy = "user_id"
+	}
+	if orderBy == "" {
+		orderBy = "ASC"
+	}
+
+	log.Debug("", "sortBy", sortBy, "orderBy", orderBy)
+
+	query := fmt.Sprintf("SELECT * FROM users ORDER BY %s %s", sortBy, orderBy)
+	log.Debug("", "query", query)
+	rows, err := database.DB.Query(query)
+
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	users := []models.User{}
+	for rows.Next() {
+		if err := rows.Err(); err != nil {
+			log.Error("Ошибка при получении данных из строки:", err)
+			return err
+		}
+		var user models.User
+		err := rows.Scan(&user.Id, &user.Surname, &user.Name, &user.Patronymic, &user.Address)
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+
+		datafixes.TrimRightSpace(&user)
+		users = append(users, user)
+	}
+
+	log.Debug("", "users", users)
+
+	return c.JSON(users)
 }
