@@ -9,7 +9,7 @@ func SetupRoutes(app *fiber.App) {
 	// Return list of users
 	app.Get("/users", handlers.ShowAllUsersHandler)
 	// Return all tasks of user
-	app.Get("/users/:userId/tasks", func(c *fiber.Ctx) error { return nil })
+	app.Get("/users/:userId/tasks", handlers.ShowAllTasksHandler)
 
 	// Start timer on the users task
 	app.Post("/tasks/:taskId/start", handlers.StartTimerHandler)

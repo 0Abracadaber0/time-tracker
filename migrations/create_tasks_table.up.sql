@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS tasks(
     task_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    name CHAR(50) NOT NULL UNIQUE,
+    name CHAR(50) NOT NULL,
     time INT,
     last_start TIMESTAMP,
     is_working BOOLEAN,

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time-tracker/config"
 	"time-tracker/internal/database"
-	"time-tracker/internal/datafixes"
 	"time-tracker/internal/models"
 )
 
@@ -123,7 +122,7 @@ func ShowAllUsersHandler(c *fiber.Ctx) error {
 			return err
 		}
 
-		datafixes.Trim(&user)
+		user.TrimRightSpaces()
 		users = append(users, user)
 	}
 

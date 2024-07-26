@@ -22,14 +22,16 @@ func CreateTaskHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	_, err := database.DB.Exec("INSERT INTO tasks (user_id, name, time, is_working) VALUES ($1, $2, $3, $4)",
+	_, err := database.DB.Exec("INSERT INTO tasks (user_id, name, time, last_start, is_working) VALUES ($1, $2, $3, $4, $5)",
 		c.Params("userId"),
 		task.Name,
 		0,
+		time.Now().UTC().Format("2006-01-02 15:04:05"),
 		"false",
 	)
 	if err != nil {
 		log.Error("Error inserting task", "user_id", c.Params("userId"))
+		return err
 	}
 
 	log.Info("Task has been added to the database")
@@ -96,4 +98,31 @@ func StopTimerHandler(c *fiber.Ctx) error {
 	}
 	log.Info("Timer stopped for task", "task_id", c.Params("taskId"))
 	return c.SendStatus(fiber.StatusOK)
+}
+
+func ShowAllTasksHandler(c *fiber.Ctx) error {
+	log := c.Locals("logger").(*slog.Logger)
+
+	query := fmt.Sprintf("SELECT * FROM tasks ORDER BY time DESC")
+	rows, err := database.DB.Query(query)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	var tasks []models.Task
+	for rows.Next() {
+		var task models.Task
+		err := rows.Scan(&task.Id, &task.UserId, &task.Name, &task.Time, &task.LastStart, &task.IsWorking)
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+
+		task.TrimRightSpaces()
+		tasks = append(tasks, task)
+	}
+
+	log.Debug(strconv.Itoa(len(tasks)))
+
+	return c.JSON(tasks)
 }
